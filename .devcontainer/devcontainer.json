@@ -1,0 +1,37 @@
+{
+    "name": "Interlade Backend",
+    "dockerComposeFile": "./docker-compose.yml",
+    "service": "interlade.backend", //check
+    "workspaceFolder": "/usr/src/app",
+
+    "mounts": [
+        "source=${localEnv:HOME}/.ssh,target=/home/node/.ssh,type=bind,consistency=volume"
+    ],
+
+    "remoteEnv": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:${containerWorkspaceFolder}/src/node_modules/.bin"
+    },
+    
+
+    "initializeCommand": "mkdir -p ${HOME}/.ssh",
+    "postCreateCommand": "npm install",
+
+    "customizations": {
+        "vscode": {
+            "settings": {
+                "terminal.integrated.defaultProfile.linux": "bash"
+            },
+            "extensions": [
+                "dbaeumer.vscode-eslint",
+                "esbenp.prettier-vscode",
+                "attlasian.atlascode"
+            ]
+        }
+    },
+
+    "forwardPorts": [
+        3000
+    ],
+
+    "remoteUser": "node"
+}

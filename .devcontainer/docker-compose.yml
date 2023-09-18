@@ -1,0 +1,52 @@
+version: "3.8"
+
+services:
+    interlade.backend:
+        container_name: interlade.backend 
+        restart: unless-stopped
+        command: sleep infinity
+        build:
+            context: .
+            dockerfile: Dockerfile
+            args:
+                VARIANT: 16
+        environment: 
+            PORT: 3200
+            DATABASE_URL: postgres://postgres:postgres@interlade.db:5432/interlade.db
+        ports:
+            - 3200:3200
+        depends_on:
+            - interlade.db
+        volumes:
+            - ..:/usr/src/app:cached
+
+    ## The DB
+    interlade.db:
+      image: postgres:14.1-alpine
+      restart: unless-stopped
+      logging:
+        driver: none ## We don't need logging for postgres
+      environment:
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: postgres
+        POSTGRES_DB: interlade.db
+      ports:
+        - "5151:5432"
+      volumes:
+        - db:/var/lib/postgresql/data
+
+    pgadmin:
+      image: dpage/pgadmin4
+      container_name: pgadmin-interlade-backend
+      environment:
+        PGADMIN_DEFAULT_EMAIL: admin@pgadmin.com
+        PGADMIN_DEFAULT_PASSWORD: pgadmin
+        PGADMIN_CONFIG_SERVER_MODE: "False"
+        PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "False"
+      ports:
+        - "5150:80"
+      volumes:
+        - ./pgadmin4/servers.json:/pgadmin4/servers.json
+
+volumes:
+    db:
